@@ -3,14 +3,13 @@ package com.orbitaltech.demo.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 
-@Data
 @Entity
-@Table(name="clientes")
+@Table(name = "clientes")
+@Data
 public class Cliente {
 
     @Id
@@ -19,4 +18,6 @@ public class Cliente {
     private String nome;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataNascimento;
+
+
 }
