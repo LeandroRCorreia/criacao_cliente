@@ -10,39 +10,64 @@ import java.io.Console;
 import java.util.List;
 
 @RestController
+@RequestMapping("/clientes")
 public class ClienteController {
 
     @Autowired
     private ClienteRepository clienteRepository;
 
-    @GetMapping("/clientes")
-    public List<Cliente> Clientes()
+    @GetMapping()
+    public List<Cliente> clientes()
     {
         List<Cliente> clientesList = clienteRepository.findAll();
 
         return clientesList;
     }
 
-    @GetMapping("/cliente/{id}")
-    public Cliente Cliente(@PathVariable long id)
+    @GetMapping("/{id}")
+    public Cliente cliente(@PathVariable long id)
     {
-        Cliente cliente = clienteRepository.
-                          findById(id).
-                          orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+        Cliente cliente = getCliente(id);
 
         return cliente;
     }
 
-    @DeleteMapping("cliente/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void Delete(@PathVariable long id)
+    public void delete(@PathVariable long id)
+    {
+        Cliente cliente = getCliente(id);
+
+        clienteRepository.deleteById(cliente.getId());
+    }
+
+
+    @PostMapping()
+    public Cliente adicionarCliente(@RequestBody Cliente cliente)
+    {
+        Cliente cliente1 = clienteRepository.save(cliente);
+
+        return cliente1;
+    }
+
+    @PutMapping("/{id}")
+    public Cliente atualizarCliente(@PathVariable long id, @RequestBody Cliente cliente)
+    {
+        Cliente cliente1 = getCliente(id);
+
+        cliente1.setNome(cliente.getNome());
+        cliente1.setDataNascimento(cliente.getDataNascimento());
+        clienteRepository.save(cliente1);
+
+        return cliente1;
+    }
+
+    private Cliente getCliente(long id)
     {
         Cliente cliente = clienteRepository.
                 findById(id).
                 orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-
-        clienteRepository.deleteById(cliente.getId());
-
+        return cliente;
     }
 
 }
