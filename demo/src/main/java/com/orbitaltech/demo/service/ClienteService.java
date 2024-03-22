@@ -31,8 +31,7 @@ public class ClienteService {
         clienteParaSerAtualizado.setNome(clienteAtualizado.getNome());
         clienteParaSerAtualizado.setDataNascimento(clienteAtualizado.getDataNascimento());
 
-
-        return clienteRepository.save(clienteAtualizado);
+        return clienteRepository.save(clienteParaSerAtualizado);
     }
 
     public Cliente buscarOuFalhar(Long clienteId) {

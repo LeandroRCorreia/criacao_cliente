@@ -4,20 +4,25 @@ import com.orbitaltech.demo.model.Cliente;
 import com.orbitaltech.demo.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
-public class ClienteController {
+public class ClienteController extends ResponseEntityExceptionHandler {
 
     @Autowired
     private ClienteService clienteService;
 
     @GetMapping()
-    public List<Cliente> clientes() {
-        return clienteService.listarCliente();
+    public ResponseEntity<List<Cliente>> clientes() {
+
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(clienteService.listarCliente());
+
     }
 
     @GetMapping("/{id}")

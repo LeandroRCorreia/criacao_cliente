@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -18,6 +20,14 @@ public class Cliente {
     private String nome;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate dataNascimento;
+
+    @ManyToMany
+    @JoinTable(
+            name = "enderecoCliente",
+            joinColumns = @JoinColumn(name = "ClientesId"),
+            inverseJoinColumns = @JoinColumn(name = "EnderecoId")
+    )
+    private Set<Endereco> enderecos = new HashSet<>();
 
 
 }
