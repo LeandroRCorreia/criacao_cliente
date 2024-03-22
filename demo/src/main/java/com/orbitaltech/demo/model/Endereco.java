@@ -2,11 +2,12 @@ package com.orbitaltech.demo.model;
 
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Endereco {

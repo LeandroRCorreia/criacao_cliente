@@ -1,6 +1,10 @@
 package com.orbitaltech.demo.service;
 
+import com.orbitaltech.demo.adapter.api.ConsultaApi;
+import com.orbitaltech.demo.dto.ClienteInputDto;
+import com.orbitaltech.demo.dto.ViaCepEnderecoDTO;
 import com.orbitaltech.demo.model.Cliente;
+import com.orbitaltech.demo.model.Endereco;
 import com.orbitaltech.demo.repository.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +15,8 @@ import java.util.List;
 public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    ConsultaApi viaCepAdapter;
 
     public List<Cliente> listarCliente() {
         return clienteRepository.findAll();
@@ -21,8 +27,21 @@ public class ClienteService {
         clienteRepository.delete(clienteParaSerDeletado);
     }
 
-    public Cliente adicionar(Cliente clienteAdicionado) {
-        return clienteRepository.save(clienteAdicionado);
+    public Cliente adicionar(ClienteInputDto clienteAdicionado) {
+        ViaCepEnderecoDTO cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
+        Cliente cliente = new Cliente();
+        Endereco endereco = Endereco.builder()
+                .logradouro(cepEnderecoDTO.getLogradouro())
+                .cep(cepEnderecoDTO.getCep())
+                .cidade(cepEnderecoDTO.getLocalidade())
+                .uf(cepEnderecoDTO.getUf())
+                .build();
+
+        cliente.setNome(clienteAdicionado.getNome());
+        cliente.setDataNascimento(clienteAdicionado.getData_nascimento());
+        cliente.getEnderecos().add(endereco);
+
+       return clienteRepository.save(cliente);
     }
 
     public Cliente atualizar(long clienteId, Cliente clienteAtualizado) {
@@ -41,3 +60,7 @@ public class ClienteService {
 
     }
 }
+
+
+
+

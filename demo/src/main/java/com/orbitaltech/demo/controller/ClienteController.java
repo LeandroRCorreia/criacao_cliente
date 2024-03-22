@@ -1,6 +1,7 @@
 package com.orbitaltech.demo.controller;
 
 import com.orbitaltech.demo.adapter.api.ConsultaApi;
+import com.orbitaltech.demo.dto.ClienteInputDto;
 import com.orbitaltech.demo.dto.ViaCepEnderecoDTO;
 import com.orbitaltech.demo.model.Cliente;
 import com.orbitaltech.demo.model.Endereco;
@@ -45,7 +46,7 @@ public class ClienteController extends ResponseEntityExceptionHandler {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public Cliente adicionarCliente(@RequestBody Cliente clientejson) {
+    public Cliente adicionarCliente(@RequestBody ClienteInputDto clientejson) {
         return clienteService.adicionar(clientejson);
     }
 
@@ -55,18 +56,5 @@ public class ClienteController extends ResponseEntityExceptionHandler {
     }
 
 
-    @GetMapping("/busca/{cep}")
-    public Endereco responsEndereco(@PathVariable String cep) {
-        ViaCepEnderecoDTO cepEnderecoDTO = consultaApi.responseEndereco(cep);
-        Endereco endereco = new Endereco();
-
-        endereco.setCep(cepEnderecoDTO.getCep());
-        endereco.setCidade(cepEnderecoDTO.getLocalidade());
-        endereco.setUf(cepEnderecoDTO.getUf());
-        endereco.setLogradouro(cepEnderecoDTO.getLogradouro());
-
-
-        return endereco;
-    }
 
 }
