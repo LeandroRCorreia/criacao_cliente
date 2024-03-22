@@ -1,6 +1,9 @@
 package com.orbitaltech.demo.controller;
 
+import com.orbitaltech.demo.adapter.api.ConsultaApi;
+import com.orbitaltech.demo.dto.ViaCepEnderecoDTO;
 import com.orbitaltech.demo.model.Cliente;
+import com.orbitaltech.demo.model.Endereco;
 import com.orbitaltech.demo.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,9 @@ public class ClienteController extends ResponseEntityExceptionHandler {
 
     @Autowired
     private ClienteService clienteService;
+
+    @Autowired
+    private ConsultaApi consultaApi;
 
     @GetMapping()
     public ResponseEntity<List<Cliente>> clientes() {
@@ -48,5 +54,19 @@ public class ClienteController extends ResponseEntityExceptionHandler {
         return clienteService.atualizar(id, clientejson);
     }
 
+
+    @GetMapping("/busca/{cep}")
+    public Endereco responsEndereco(@PathVariable String cep) {
+        ViaCepEnderecoDTO cepEnderecoDTO = consultaApi.responseEndereco(cep);
+        Endereco endereco = new Endereco();
+
+        endereco.setCep(cepEnderecoDTO.getCep());
+        endereco.setCidade(cepEnderecoDTO.getLocalidade());
+        endereco.setUf(cepEnderecoDTO.getUf());
+        endereco.setLogradouro(cepEnderecoDTO.getLogradouro());
+
+
+        return endereco;
+    }
 
 }

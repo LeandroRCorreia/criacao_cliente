@@ -1,9 +1,8 @@
 package com.orbitaltech.demo.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,4 +17,6 @@ public class Endereco {
     private String logradouro;
     private String cidade;
     private String uf;
+
+
 }
