@@ -31,6 +31,10 @@ public class ClienteService {
         clienteParaSerAtualizado.setNome(clienteAtualizado.getNome());
         clienteParaSerAtualizado.setDataNascimento(clienteAtualizado.getDataNascimento());
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> adc4ef06a4b48d70ec50121a163f30ecc2e57f3e
         return clienteRepository.save(clienteParaSerAtualizado);
     }
 
