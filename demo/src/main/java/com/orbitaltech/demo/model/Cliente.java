@@ -18,13 +18,14 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+    @Column(name = "dataNascimento")
     private LocalDate dataNascimento;
 
     @ManyToMany
     @JoinTable(
             name = "enderecoCliente",
-            joinColumns = @JoinColumn(name = "ClientesId"),
-            inverseJoinColumns = @JoinColumn(name = "EnderecoId")
+            joinColumns = @JoinColumn(name = "fk_clientes_id"),
+            inverseJoinColumns = @JoinColumn(name = "fk_endereco_id")
     )
     private Set<Endereco> enderecos = new HashSet<>();
 

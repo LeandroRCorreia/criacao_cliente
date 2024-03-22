@@ -2,6 +2,7 @@ package com.orbitaltech.demo.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,7 @@ public class ClienteInputDto {
 
     private String nome;
     @JsonFormat(pattern = "dd/MM/yyyy")
+    @Column(name = "dataNascimento")
     private LocalDate dataNascimento;
     private String cep;
 
