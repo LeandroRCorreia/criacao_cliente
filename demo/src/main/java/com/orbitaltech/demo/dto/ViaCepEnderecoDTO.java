@@ -11,10 +11,10 @@ public class ViaCepEnderecoDTO {
     private String logradouro;
     private String localidade;
     private String uf;
-    private String error;
+    private String erro;
 
     public Boolean isResponseError() {
-        return StringUtils.isNotEmpty(error);
+        return StringUtils.isNotEmpty(erro);
 
     }
 }

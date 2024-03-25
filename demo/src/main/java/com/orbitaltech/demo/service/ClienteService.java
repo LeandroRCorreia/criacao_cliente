@@ -5,6 +5,7 @@ import com.orbitaltech.demo.dto.ClienteInputDto;
 import com.orbitaltech.demo.dto.ViaCepEnderecoDTO;
 import com.orbitaltech.demo.exception.ClienteNaoEncontradoException;
 import com.orbitaltech.demo.exception.EnderecoNaoEncontradoException;
+import com.orbitaltech.demo.exception.FormatoEnderecoInvalidoException;
 import com.orbitaltech.demo.exception.NegocioException;
 import com.orbitaltech.demo.model.Cliente;
 import com.orbitaltech.demo.model.Endereco;
@@ -84,13 +85,20 @@ public class ClienteService {
     private Endereco copiaEnderecoParaCliente(ClienteInputDto clienteAdicionado) {
         try {
             ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
-        }catch(Feign e) {
-            System.out.println("Passei aqui captura da feighException");
-            throw new FeignException.BadRequest("Capturado o bug");
+            return buscarOuFalharEndereco(cepEnderecoDTO);
+        } catch (FeignException e) {
+            throw new EnderecoNaoEncontradoException("Endereco não encontrado");
         }
 
-        buscarOuFalharEndereco(cepEnderecoDTO);
+    }
 
+    private Endereco buscarOuFalharEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
+        if (cepEnderecoDTO.getBody().isResponseError()) {
+            throw new FormatoEnderecoInvalidoException("O formato do endereço passado está errado o formato correto é com 9 digitos");
+        }
+        if (cepEnderecoDTO.getStatusCode().is4xxClientError()) {
+            throw new EnderecoNaoEncontradoException("Endereço descrito está em formato incorreto.");
+        }
         Endereco endereco = Endereco.builder()
                 .logradouro(cepEnderecoDTO.getBody().getLogradouro())
                 .cep(cepEnderecoDTO.getBody().getCep())
@@ -98,17 +106,8 @@ public class ClienteService {
                 .uf(cepEnderecoDTO.getBody().getUf())
                 .build();
 
-        Endereco enderecoSalvo = enderecoRepository.save(endereco);
-        return enderecoSalvo;
-    }
+        return enderecoRepository.save(endereco);
 
-    private static void buscarOuFalharEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
-        if (cepEnderecoDTO.getBody().isResponseError()) {
-            throw new EnderecoNaoEncontradoException("Endereco não encontrado.");
-        }
-        if (cepEnderecoDTO.getStatusCode().is4xxClientError()) {
-            throw new EnderecoNaoEncontradoException("Endereço descrito está em formato incorreto.");
-        }
     }
 
 }

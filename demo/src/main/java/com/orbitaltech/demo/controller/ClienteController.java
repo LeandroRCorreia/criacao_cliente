@@ -54,6 +54,9 @@ public class ClienteController extends ResponseEntityExceptionHandler {
         return clienteService.atualizar(id, clientejson);
     }
 
-
+    @GetMapping("/teste/{viaCepEnderecoDTO}")
+    public ViaCepEnderecoDTO adicionar(@PathVariable String viaCepEnderecoDTO) {
+        return consultaApi.responseEndereco(viaCepEnderecoDTO).getBody();
+    }
 
 }
