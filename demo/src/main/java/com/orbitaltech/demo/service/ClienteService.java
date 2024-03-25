@@ -3,10 +3,15 @@ package com.orbitaltech.demo.service;
 import com.orbitaltech.demo.adapter.api.ConsultaApi;
 import com.orbitaltech.demo.dto.ClienteInputDto;
 import com.orbitaltech.demo.dto.ViaCepEnderecoDTO;
+import com.orbitaltech.demo.exception.ClienteNaoEncontradoException;
+import com.orbitaltech.demo.exception.EnderecoNaoEncontradoException;
+import com.orbitaltech.demo.exception.NegocioException;
 import com.orbitaltech.demo.model.Cliente;
 import com.orbitaltech.demo.model.Endereco;
 import com.orbitaltech.demo.repository.ClienteRepository;
 import com.orbitaltech.demo.repository.EnderecoRepository;
+import feign.Feign;
+import feign.FeignException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -38,11 +43,9 @@ public class ClienteService {
         try {
             clienteRepository.delete(clienteParaSerDeletado);
         } catch (EmptyResultDataAccessException e) {
-            throw new RuntimeException();
-            // TODO fazer exceção específica para o delete
+            throw new ClienteNaoEncontradoException("Cliente não encontrado.");
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException();
-            // TODO fazer exceção específica para o delete
+            throw new NegocioException("Cliente a ser deletado, não pode ser deletado");
         }
 
     }
@@ -74,15 +77,17 @@ public class ClienteService {
 
     public Cliente buscarOuFalhar(Long clienteId) {
         return clienteRepository.findById(clienteId).orElseThrow(
-                () -> new IllegalArgumentException("Cliente não encontrado"));
-
-        // TODO fazer exceção de cliente não encontrado
-
+                () -> new ClienteNaoEncontradoException("Cliente não encontrado"));
     }
 
 
     private Endereco copiaEnderecoParaCliente(ClienteInputDto clienteAdicionado) {
-        ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
+        try {
+            ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
+        }catch(Feign e) {
+            System.out.println("Passei aqui captura da feighException");
+            throw new FeignException.BadRequest("Capturado o bug");
+        }
 
         buscarOuFalharEndereco(cepEnderecoDTO);
 
@@ -99,19 +104,11 @@ public class ClienteService {
 
     private static void buscarOuFalharEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
         if (cepEnderecoDTO.getBody().isResponseError()) {
-            throw new RuntimeException();
-            // TODO fazer o retorno de endereco não encontrado
+            throw new EnderecoNaoEncontradoException("Endereco não encontrado.");
         }
         if (cepEnderecoDTO.getStatusCode().is4xxClientError()) {
-            throw new RuntimeException();
-            // TODO fazer o retorno de formato do endereço descrito está errado não encontrado
+            throw new EnderecoNaoEncontradoException("Endereço descrito está em formato incorreto.");
         }
     }
 
-
-
 }
-
-
-
-
