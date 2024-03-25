@@ -3,6 +3,7 @@ package com.orbitaltech.demo.controller.handlers;
 import com.orbitaltech.demo.dto.ExceptionDto;
 import com.orbitaltech.demo.exception.ClienteNaoEncontradoException;
 import com.orbitaltech.demo.exception.EnderecoNaoEncontradoException;
+import com.orbitaltech.demo.exception.FormatoEnderecoInvalidoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -23,7 +24,10 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionDTO);
     }
 
-
-
+    @ExceptionHandler(FormatoEnderecoInvalidoException.class)
+    public ResponseEntity<ExceptionDto> formatadoEnderecoInvalido(FormatoEnderecoInvalidoException ex){
+        ExceptionDto exceptionDTO = new ExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionDTO);
+    }
 
 }

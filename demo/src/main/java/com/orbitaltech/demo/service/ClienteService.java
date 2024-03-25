@@ -87,7 +87,7 @@ public class ClienteService {
             ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
             return buscarOuFalharEndereco(cepEnderecoDTO);
         } catch (FeignException e) {
-            throw new EnderecoNaoEncontradoException("Endereco não encontrado");
+            throw new FormatoEnderecoInvalidoException("O formato do endereço passado está errado. O formato correto é com 8 digitos");
         }
 
     }
@@ -96,9 +96,7 @@ public class ClienteService {
         if (cepEnderecoDTO.getBody().isResponseError()) {
             throw new EnderecoNaoEncontradoException("Endereço não encontrado");
         }
-        if (cepEnderecoDTO.getStatusCode().is4xxClientError()) {
-            throw new FormatoEnderecoInvalidoException("O formato do endereço passado está errado o formato correto é com 9 digitos");
-        }
+
         return salvaEndereco(cepEnderecoDTO);
 
     }
