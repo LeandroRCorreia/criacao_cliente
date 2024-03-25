@@ -80,6 +80,7 @@ public class ClienteService {
 
     }
 
+
     private Endereco copiaEnderecoParaCliente(ClienteInputDto clienteAdicionado) {
         ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
 
