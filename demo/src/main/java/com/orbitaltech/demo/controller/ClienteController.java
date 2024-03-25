@@ -1,6 +1,7 @@
 package com.orbitaltech.demo.controller;
 
 import com.orbitaltech.demo.adapter.api.ConsultaApi;
+import com.orbitaltech.demo.controller.handlers.ControllerExceptionHandler;
 import com.orbitaltech.demo.dto.ClienteInputDto;
 import com.orbitaltech.demo.dto.ViaCepEnderecoDTO;
 import com.orbitaltech.demo.model.Cliente;
@@ -26,10 +27,8 @@ public class ClienteController extends ResponseEntityExceptionHandler {
     private ConsultaApi consultaApi;
 
     @GetMapping()
-    public ResponseEntity<List<Cliente>> clientes() {
-
-        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(clienteService.listarCliente());
-
+    public List<Cliente> clientes() {
+        return clienteService.listarCliente();
     }
 
     @GetMapping("/{id}")
