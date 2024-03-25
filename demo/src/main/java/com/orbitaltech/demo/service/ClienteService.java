@@ -11,18 +11,17 @@ import com.orbitaltech.demo.model.Cliente;
 import com.orbitaltech.demo.model.Endereco;
 import com.orbitaltech.demo.repository.ClienteRepository;
 import com.orbitaltech.demo.repository.EnderecoRepository;
-import feign.Feign;
 import feign.FeignException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class ClienteService {
@@ -43,6 +42,7 @@ public class ClienteService {
         Cliente clienteParaSerDeletado = buscarOuFalhar(id);
         try {
             clienteRepository.delete(clienteParaSerDeletado);
+            clienteRepository.flush();
         } catch (EmptyResultDataAccessException e) {
             throw new ClienteNaoEncontradoException("Cliente não encontrado.");
         } catch (DataIntegrityViolationException e) {
@@ -65,14 +65,14 @@ public class ClienteService {
     }
 
     @Transactional
-    public Cliente atualizar(long clienteId, Cliente clienteAtualizado) {
+    public Cliente atualizar(long clienteId, ClienteInputDto clienteAdicionado) {
 
         Cliente clienteParaSerAtualizado = buscarOuFalhar(clienteId);
 
-        clienteParaSerAtualizado.setNome(clienteAtualizado.getNome());
-        clienteParaSerAtualizado.setDataNascimento(clienteAtualizado.getDataNascimento());
-
-
+        clienteParaSerAtualizado.setNome(clienteAdicionado.getNome());
+        clienteParaSerAtualizado.setDataNascimento(clienteAdicionado.getDataNascimento());
+        Endereco endereco = copiaEnderecoParaCliente(clienteAdicionado);
+        clienteParaSerAtualizado.getEnderecos().set(0, endereco);
         return clienteRepository.save(clienteParaSerAtualizado);
     }
 
@@ -94,11 +94,16 @@ public class ClienteService {
 
     private Endereco buscarOuFalharEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
         if (cepEnderecoDTO.getBody().isResponseError()) {
-            throw new FormatoEnderecoInvalidoException("O formato do endereço passado está errado o formato correto é com 9 digitos");
+            throw new EnderecoNaoEncontradoException("Endereço não encontrado");
         }
         if (cepEnderecoDTO.getStatusCode().is4xxClientError()) {
-            throw new EnderecoNaoEncontradoException("Endereço descrito está em formato incorreto.");
+            throw new FormatoEnderecoInvalidoException("O formato do endereço passado está errado o formato correto é com 9 digitos");
         }
+        return salvaEndereco(cepEnderecoDTO);
+
+    }
+
+    private Endereco salvaEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
         Endereco endereco = Endereco.builder()
                 .logradouro(cepEnderecoDTO.getBody().getLogradouro())
                 .cep(cepEnderecoDTO.getBody().getCep())
@@ -107,7 +112,6 @@ public class ClienteService {
                 .build();
 
         return enderecoRepository.save(endereco);
-
     }
 
 }

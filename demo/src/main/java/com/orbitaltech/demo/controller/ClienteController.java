@@ -50,7 +50,7 @@ public class ClienteController extends ResponseEntityExceptionHandler {
     }
 
     @PutMapping("/{id}")
-    public Cliente atualizarCliente(@PathVariable long id, @RequestBody Cliente clientejson) {
+    public Cliente atualizarCliente(@PathVariable long id, @RequestBody ClienteInputDto clientejson) {
         return clienteService.atualizar(id, clientejson);
     }
 
