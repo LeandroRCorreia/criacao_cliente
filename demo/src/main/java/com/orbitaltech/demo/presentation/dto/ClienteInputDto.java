@@ -1,4 +1,4 @@
-package com.orbitaltech.demo.dto;
+package com.orbitaltech.demo.presentation.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;

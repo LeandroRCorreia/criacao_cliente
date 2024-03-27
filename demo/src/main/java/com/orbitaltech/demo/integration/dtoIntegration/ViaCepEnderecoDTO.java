@@ -1,4 +1,4 @@
-package com.orbitaltech.demo.dto;
+package com.orbitaltech.demo.integration.dtoIntegration;
 
 import lombok.Getter;
 import lombok.Setter;

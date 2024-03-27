@@ -1,6 +1,6 @@
-package com.orbitaltech.demo.repository;
+package com.orbitaltech.demo.integration.repository;
 
-import com.orbitaltech.demo.model.Cliente;
+import com.orbitaltech.demo.integration.model.Cliente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,4 +1,4 @@
-package com.orbitaltech.demo.dto;
+package com.orbitaltech.demo.presentation.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExceptionDto {
+public class ExceptionHandlerDto {
 
     private HttpStatus statusCode;
     private String messageCode;

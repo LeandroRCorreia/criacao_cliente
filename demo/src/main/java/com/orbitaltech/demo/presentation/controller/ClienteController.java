@@ -1,8 +1,8 @@
-package com.orbitaltech.demo.controller;
+package com.orbitaltech.demo.presentation.controller;
 
 
-import com.orbitaltech.demo.dto.ClienteInputDto;
-import com.orbitaltech.demo.model.Cliente;
+import com.orbitaltech.demo.presentation.dto.ClienteInputDto;
+import com.orbitaltech.demo.integration.model.Cliente;
 import com.orbitaltech.demo.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

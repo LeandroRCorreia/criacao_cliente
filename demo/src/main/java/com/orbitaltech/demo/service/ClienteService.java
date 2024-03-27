@@ -1,37 +1,32 @@
 package com.orbitaltech.demo.service;
 
-import com.orbitaltech.demo.adapter.api.ConsultaApi;
-import com.orbitaltech.demo.dto.ClienteInputDto;
-import com.orbitaltech.demo.dto.ViaCepEnderecoDTO;
-import com.orbitaltech.demo.exception.ClienteNaoEncontradoException;
-import com.orbitaltech.demo.exception.EnderecoNaoEncontradoException;
-import com.orbitaltech.demo.exception.FormatoEnderecoInvalidoException;
-import com.orbitaltech.demo.exception.NegocioException;
-import com.orbitaltech.demo.model.Cliente;
-import com.orbitaltech.demo.model.Endereco;
-import com.orbitaltech.demo.repository.ClienteRepository;
-import com.orbitaltech.demo.repository.EnderecoRepository;
-import feign.FeignException;
+import com.orbitaltech.demo.gateway.adapter.ConsultaEnderecoGatewayAdapter;
+import com.orbitaltech.demo.integration.api.ConsultaApiFeignClientIntegration;
+import com.orbitaltech.demo.integration.model.Cliente;
+import com.orbitaltech.demo.integration.model.Endereco;
+import com.orbitaltech.demo.integration.repository.ClienteRepository;
+import com.orbitaltech.demo.integration.repository.EnderecoRepository;
+import com.orbitaltech.demo.presentation.dto.ClienteInputDto;
+import com.orbitaltech.demo.service.exception.ClienteNaoEncontradoException;
+import com.orbitaltech.demo.service.exception.NegocioException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
     @Autowired
-    ConsultaApi viaCepAdapter;
+    ConsultaApiFeignClientIntegration viaCepAdapter;
     @Autowired
     EnderecoRepository enderecoRepository;
-
+    @Autowired
+    ConsultaEnderecoGatewayAdapter consultaEnderecoGatewayAdapter;
 
     public List<Cliente> listarCliente() {
         return clienteRepository.findAll();
@@ -56,6 +51,7 @@ public class ClienteService {
         Cliente cliente = new Cliente();
 
         Endereco enderecoSalvo = copiaEnderecoParaCliente(clienteAdicionado);
+        enderecoSalvo = enderecoRepository.save(enderecoSalvo);
 
         cliente.setNome(clienteAdicionado.getNome());
         cliente.setDataNascimento(clienteAdicionado.getDataNascimento());
@@ -81,35 +77,8 @@ public class ClienteService {
                 () -> new ClienteNaoEncontradoException("Cliente não encontrado"));
     }
 
-
     private Endereco copiaEnderecoParaCliente(ClienteInputDto clienteAdicionado) {
-        try {
-            ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
-            return buscarOuFalharEndereco(cepEnderecoDTO);
-        } catch (FeignException e) {
-            throw new FormatoEnderecoInvalidoException("O formato do endereço passado está errado. O formato correto é com 8 digitos");
-        }
-
-    }
-
-    private Endereco buscarOuFalharEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
-        if (cepEnderecoDTO.getBody().isResponseError()) {
-            throw new EnderecoNaoEncontradoException("Endereço não encontrado");
-        }
-
-        return salvaEndereco(cepEnderecoDTO);
-
-    }
-
-    private Endereco salvaEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
-        Endereco endereco = Endereco.builder()
-                .logradouro(cepEnderecoDTO.getBody().getLogradouro())
-                .cep(cepEnderecoDTO.getBody().getCep())
-                .cidade(cepEnderecoDTO.getBody().getLocalidade())
-                .uf(cepEnderecoDTO.getBody().getUf())
-                .build();
-
-        return enderecoRepository.save(endereco);
+        return consultaEnderecoGatewayAdapter.consulta(clienteAdicionado.getCep());
     }
 
 }

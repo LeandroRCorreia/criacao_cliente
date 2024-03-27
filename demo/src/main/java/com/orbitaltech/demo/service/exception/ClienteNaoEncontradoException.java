@@ -1,4 +1,4 @@
-package com.orbitaltech.demo.exception;
+package com.orbitaltech.demo.service.exception;
 
 
 public class ClienteNaoEncontradoException extends EntidadeNaoEncontradaException {

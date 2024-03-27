@@ -1,4 +1,4 @@
-package com.orbitaltech.demo.model;
+package com.orbitaltech.demo.integration.model;
 
 
 import jakarta.persistence.*;
