@@ -15,17 +15,7 @@ public class ConsultaEnderecoGatewayAdapterImpl implements ConsultaEnderecoGatew
 
     @Autowired
     private ConsultaApiFeignClientIntegration consultaApiFeignClientIntegration;
-//    private Endereco buscarOuFalharEndereco(ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO) {
-//        if (cepEnderecoDTO.getBody().isResponseError()) {
-//            throw new EnderecoNaoEncontradoException("Endereço não encontrado");
-//        }
 
-//       try {
-//        ResponseEntity<ViaCepEnderecoDTO> cepEnderecoDTO = viaCepAdapter.responseEndereco(clienteAdicionado.getCep());
-//        return buscarOuFalharEndereco(cepEnderecoDTO);
-//    } catch (FeignException e) {
-//        throw new FormatoEnderecoInvalidoException("O formato do endereço passado está errado. O formato correto é com 8 digitos");
-//    }
 
     @Override
     public Endereco consulta(String cep) {

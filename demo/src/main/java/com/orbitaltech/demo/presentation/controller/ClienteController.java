@@ -1,31 +1,35 @@
 package com.orbitaltech.demo.presentation.controller;
 
 
-import com.orbitaltech.demo.presentation.dto.ClienteInputDto;
-import com.orbitaltech.demo.integration.model.Cliente;
+import com.orbitaltech.demo.presentation.dto.model.ClienteModelDto;
+import com.orbitaltech.demo.presentation.mapper.ClienteMapper;
 import com.orbitaltech.demo.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import com.orbitaltech.demo.presentation.dto.input.ClienteInputDto;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
-public class ClienteController extends ResponseEntityExceptionHandler {
+public class ClienteController {
 
     @Autowired
     private ClienteService clienteService;
 
+
     @GetMapping()
-    public List<Cliente> clientes() {
-        return clienteService.listarCliente();
+    public List<ClienteModelDto> clientes() {
+        return ClienteMapper.CLIENTE_MAPPER.toCollectionDto(clienteService.listarCliente());
+
     }
 
     @GetMapping("/{id}")
-    public Cliente cliente(@PathVariable long id) {
-        return clienteService.buscarOuFalhar(id);
+    public ClienteModelDto cliente(@PathVariable long id) {
+
+        return  ClienteMapper.CLIENTE_MAPPER.toDto(clienteService.buscarOuFalhar(id));
     }
 
     @DeleteMapping("/{id}")
@@ -37,13 +41,13 @@ public class ClienteController extends ResponseEntityExceptionHandler {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public Cliente adicionarCliente(@RequestBody ClienteInputDto clientejson) {
-        return clienteService.adicionar(clientejson);
+    public ClienteModelDto adicionarCliente(@RequestBody ClienteInputDto clienteInput) {
+        return ClienteMapper.CLIENTE_MAPPER.toDto(clienteService.adicionar(clienteInput));
     }
 
     @PutMapping("/{id}")
-    public Cliente atualizarCliente(@PathVariable long id, @RequestBody ClienteInputDto clientejson) {
-        return clienteService.atualizar(id, clientejson);
+    public ClienteModelDto atualizarCliente(@PathVariable long id, @RequestBody ClienteInputDto clienteInput) {
+        return ClienteMapper.CLIENTE_MAPPER.toDto(clienteService.atualizar(id, clienteInput));
     }
 
 }

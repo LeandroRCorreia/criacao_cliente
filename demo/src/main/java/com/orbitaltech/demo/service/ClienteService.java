@@ -6,7 +6,7 @@ import com.orbitaltech.demo.integration.model.Cliente;
 import com.orbitaltech.demo.integration.model.Endereco;
 import com.orbitaltech.demo.integration.repository.ClienteRepository;
 import com.orbitaltech.demo.integration.repository.EnderecoRepository;
-import com.orbitaltech.demo.presentation.dto.ClienteInputDto;
+import com.orbitaltech.demo.presentation.dto.input.ClienteInputDto;
 import com.orbitaltech.demo.service.exception.ClienteNaoEncontradoException;
 import com.orbitaltech.demo.service.exception.NegocioException;
 import jakarta.transaction.Transactional;
@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
